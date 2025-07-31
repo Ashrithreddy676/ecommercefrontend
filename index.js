@@ -1,31 +1,40 @@
-import login from "./login.js"
-import register from "./register.js"
+import login, { handelLoginbind } from "./login.js"
+import register, { handelRegisterBind } from "./register.js"
 
 const root=document.getElementById('root')
 const allAnchors=document.querySelectorAll('a')
 
 const router={
-    "/login":login,
-    "/register":register
+    "/login":[login,handelLoginbind],
+    "/register":[register,handelRegisterBind],
 }
 
 function handelClick(e){
-    e.preventDefault()
-    // console.log(e.target);
-    let path=e.target.pathname
-    history.pushState(null,"",`${path}`)
-    root.innerHTML=router[path]()
+  e.preventDefault()
+//   console.log(e.target.pathname);
+let path=e.target.pathname
+  history.pushState(null,"",`${path}`)
+root.innerHTML=router[path][0]()
+if(router[path][1]){
+  router[path][1]()
+}
 }
 allAnchors.forEach((anchor)=>{
     anchor.addEventListener("click",handelClick)
 })
 
 window.addEventListener('popstate',(e)=>{
-    let path=location.pathname
-    if(path=="/index.html"){
-        root.innerHTML=""
-
-    }else{
-        root.innerHTML=router[path]()
-    }
+  // console.log(location);
+  let path=location.pathname
+  // console.log(path);
+  
+if(path=="/index.html"){
+root.innerHTML=""
+}else{
+  root.innerHTML=router[path][0]()
+ if( router[path][1]){
+   router[path][1]()
+ }
+}
+  
 })
